@@ -89,7 +89,7 @@ class FirstSwingProg extends JFrame {
 		
 		
 		
-		setLayout(new GridLayout(5,2));
+		setLayout(new GridLayout(2,2));
 		setVisible(true);
 		setSize(400,500);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
