@@ -1,189 +1,155 @@
 package CodSoft;
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.List;
-import javax.swing.table.AbstractTableModel;
 
-public class TASK_5 extends JFrame {
-    private JTextField nameTextField;
-    private JTextField rollNumberTextField;
-    private JComboBox<String> gradeComboBox; 
-    private JButton addStudentButton;
-    private JButton editStudentButton; 
-    private JButton displayAllStudentsButton;
-    private List<Student> students;  
-    private int selectedStudentIndex = -1; 
+class Student extends JFrame{
 
-    // Inner Student class
-    private class Student {
-        private String name;
-        private int rollNumber;
-        private String grade; 
+//		Top panel
+	
+	
+		public Student() {
+        JPanel topPane = new JPanel();
+        topPane.setBackground(Color.LIGHT_GRAY);
+        JLabel mainHead = new JLabel("Student Management System");
+        Font headFont = new Font("verdana",Font.BOLD,14);
+        mainHead.setFont(headFont);
 
-        public Student(String name, int rollNumber, String grade) {
-            this.name = name;
-            this.rollNumber = rollNumber;
-            this.grade = grade;
-        }
-
+//      main panel
         
-    }
+        
+        JPanel mainPane = new JPanel();
+        mainPane.setBackground(Color.CYAN);
+        mainPane.setLayout(new GridLayout(8,1));
+     
+//        TextFields
+        
+        
+        JLabel nameLabel = new JLabel("Enter Your Name");
+        JTextField nameField = new JTextField(30); 
+        JLabel rollLabel = new JLabel("Enter Your Roll_no");
+        JTextField roll_field = new JTextField(30);
+        JLabel gradeLabel = new JLabel("Enter Your Grade");
+        JTextField grad_field = new JTextField(30);
+        
+        
+        
+        
+        mainPane.setLayout(new FlowLayout());
+        
+//        Buttons
+        
+        JButton addsT = new JButton("Add Student");
+        JButton edit = new JButton("Edit Student");
+        JButton display = new JButton("display Student");
+        JButton del = new JButton("Delete");
+        JButton del_all = new JButton("Delete All");
+        
+        
+//		Table
+        
+        JTable studentTable = new JTable();
+        DefaultTableModel tableModel = new DefaultTableModel(); 
+        tableModel.addColumn("Name");
+        tableModel.addColumn("Roll_No");
+        tableModel.addColumn("Grade");
+        
+        studentTable.setModel(tableModel);
+        
+        JScrollPane jp = new JScrollPane(studentTable);
+        mainPane.add(jp);
+        
+//        eventListning
+        
+        addsT.addActionListener(al->{
+        	
+            String name = nameField.getText();
+            String rollNo = roll_field.getText();
+            String grade = grad_field.getText();
 
- 
-    private class StudentTableModel extends AbstractTableModel {
-        private List<Student> students;
+            
+            if (!name.isEmpty() && !rollNo.isEmpty() && !grade.isEmpty()) {
+                
+            	
+                
+            	DefaultTableModel model = (DefaultTableModel) studentTable.getModel();
+                model.addRow(new Object[]{name, rollNo, grade});
 
-        public StudentTableModel(List<Student> students) {
-            this.students = students;
-        }
-
-        // Implement the necessary methods for a table model
-        @Override
-        public int getRowCount() {
-            return students.size();
-        }
-
-        @Override
-        public int getColumnCount() {
-            // Define the number of columns in your table
-            return 3; 
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            // Implement how data should be retrieved for each cell
-            Student student = students.get(rowIndex);
-            switch (columnIndex) {
-                case 0:
-                    return student.name;
-                case 1:
-                    return student.rollNumber;
-                case 2:
-                    return student.grade;
-                default:
-                    return null;
+                
+                nameField.setText("");
+                roll_field.setText("");
+                grad_field.setText("");  //removing text in input fields after adding data
+            } else {
+                JOptionPane.showMessageDialog(this, "Please fill in all fields.");
             }
-        }
 
-        // You can implement other necessary methods like getColumnNames, isCellEditable, etc.
-    }
+        });
+        
+        edit.addActionListener(al -> {
+        	int selectedRow = studentTable.getSelectedRow();
 
-    public TASK_5() {
-        super("Student Management System");
+            if (selectedRow != -1) {
+                
+                String name = nameField.getText();
+                String rollNo = roll_field.getText();
+                String grade = grad_field.getText();
 
-        // Initialize the list of students
-        students = new ArrayList<>();
+                
+                DefaultTableModel model = (DefaultTableModel) studentTable.getModel();
+                model.setValueAt(name, selectedRow, 0);
+                model.setValueAt(rollNo, selectedRow, 1);
+                model.setValueAt(grade, selectedRow, 2);
 
-        // Create components
-        nameTextField = new JTextField(20);
-        rollNumberTextField = new JTextField(10);
-        gradeComboBox = new JComboBox<>(new String[]{"A", "B", "C"}); // Specify grade options
-        addStudentButton = new JButton("Add Student");
-        editStudentButton = new JButton("Edit Student"); // New "Edit Student" button
-        displayAllStudentsButton = new JButton("Display All Students");
-
-        // Add components to the JFrame
-        add(new JLabel("Name:"));
-        add(nameTextField);
-        add(new JLabel("Roll Number:"));
-        add(rollNumberTextField);
-        add(new JLabel("Grade:"));
-        add(gradeComboBox); // Use gradeComboBox
-        add(addStudentButton);
-        add(editStudentButton); // Add "Edit Student" button
-        add(displayAllStudentsButton);
-
-        // Add event listeners to the components
-        addStudentButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    // Get the student data from the text fields
-                    String name = nameTextField.getText();
-                    int rollNumber = Integer.parseInt(rollNumberTextField.getText());
-                    String grade = (String) gradeComboBox.getSelectedItem(); // Get selected grade
-
-                    // Create a new student object
-                    Student student = new Student(name, rollNumber, grade);
-
-                    // Add the student to the list
-                    students.add(student);
-
-                    // Clear the text fields
-                    nameTextField.setText("");
-                    rollNumberTextField.setText("");
-                    gradeComboBox.setSelectedIndex(0); // Reset grade selection
-                } catch (NumberFormatException ex) {
-                    // Handle the error if non-numeric input is provided
-                    JOptionPane.showMessageDialog(TASK_5.this, "Invalid input for Roll Number. Please enter a numeric value.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                }
+                
+                nameField.setText("");
+                roll_field.setText("");
+                grad_field.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a row to edit.");
             }
         });
-
-        editStudentButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (selectedStudentIndex != -1) {
-                    try {
-                        // Get the edited student data
-                        String name = nameTextField.getText();
-                        int rollNumber = Integer.parseInt(rollNumberTextField.getText());
-                        String grade = (String) gradeComboBox.getSelectedItem();
-
-                        // Update the student in the list
-                        Student student = students.get(selectedStudentIndex);
-                        student.name = name;
-                        student.rollNumber = rollNumber;
-                        student.grade = grade;
-
-                        // Clear the text fields
-                        nameTextField.setText("");
-                        rollNumberTextField.setText("");
-                        gradeComboBox.setSelectedIndex(0); // Reset grade selection
-                        selectedStudentIndex = -1; // Reset selected index
-                    } catch (NumberFormatException ex) {
-                        // Handle the error if non-numeric input is provided
-                        JOptionPane.showMessageDialog(TASK_5.this, "Invalid input for Roll Number. Please enter a numeric value.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(TASK_5.this, "Select a student to edit first.", "Edit Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
+        
+        display.addActionListener(al -> {
+        	studentTable.setVisible(true);
         });
+        
 
-        displayAllStudentsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Display the students in a table
-                StudentTableModel model = new StudentTableModel(students);
-                JTable studentTable = new JTable(model);
-                JScrollPane scrollPane = new JScrollPane(studentTable);
 
-                JFrame tableFrame = new JFrame("Student List");
-                tableFrame.add(scrollPane);
-                tableFrame.setSize(500, 500);
-                tableFrame.setVisible(true);
-            }
-        });
+//      adding layouts
+        
+        
+        topPane.add(mainHead);
+        
+        mainPane.add(nameLabel);
+        mainPane.add(nameField);
+        mainPane.add(rollLabel);
+        mainPane.add(roll_field);
+        mainPane.add(gradeLabel);
+        mainPane.add(grad_field);
+        
+        
+        mainPane.add(addsT);
+        mainPane.add(edit);
+        mainPane.add(display);
+       
+        
 
-        // Set the layout of the JFrame
-        setLayout(new java.awt.FlowLayout());
-
-        // Set the size of the JFrame
-        setSize(500, 300);
-
-        // Set the visibility of the JFrame
+        setLayout(new BorderLayout()); 
+        add(topPane, BorderLayout.NORTH);
+        add(mainPane, BorderLayout.CENTER);
+        
+        studentTable.setVisible(false);
+        setTitle("Student Management System");
         setVisible(true);
-
-        // Set close operation
+        setSize(500, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
+}
 
+public class TASK_5 {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new TASK_5();
-        });
+        Student obj = new Student();
     }
 }
+
